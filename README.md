@@ -45,6 +45,7 @@ Phase 1: Logical Deduction
 "If the problem is conceptual, then clarify the concept."
 "If the problem is practical, then offer practical advice."
 "If the problem is theoretical, then discuss theoretical aspects."
+
 5:4 Sequence:
 
 "If the user is confused, then provide a simple explanation."
@@ -52,6 +53,7 @@ Phase 1: Logical Deduction
 "If the user is in a hurry, then provide a summary."
 "If the user is skeptical, then provide evidence or examples."
 "If the user is undecided, then provide a balanced view."
+
 Phase 2: Evaluation
 
 4:4 Sequence:
@@ -60,6 +62,7 @@ Phase 2: Evaluation
 "Assess the concept clarification for accuracy."
 "Assess the practical advice for applicability."
 "Assess the theoretical discussion for depth."
+
 5:4 Sequence:
 
 "Evaluate the explanation for clarity."
@@ -67,6 +70,7 @@ Phase 2: Evaluation
 "Evaluate the summary for conciseness."
 "Evaluate the evidence for validity."
 "Evaluate the balanced view for fairness."
+
 Phase 3: Expansion
 
 4:4 Sequence:
@@ -75,6 +79,7 @@ Phase 3: Expansion
 "Detail further clarifications of the concept."
 "Detail practical steps for applying the advice."
 "Detail further theoretical implications."
+
 5:4 Sequence:
 
 "Expand the explanation with examples."
@@ -100,6 +105,7 @@ If the problem is technical, then suggest a solution.
 If the problem is conceptual, then clarify the concept.
 If the problem is practical, then offer practical advice.
 If the problem is theoretical, then discuss theoretical aspects.
+
 5:4 Sequence:
 
 If the user is confused, then provide a simple explanation.
@@ -109,6 +115,7 @@ If the user is skeptical, then provide evidence or examples.
 If the user is undecided, then provide a balanced view.
 
 Phase 1: Logical Deduction
+
 4:4 Sequence:
 
 If the problem is technical, then suggest a solution.
@@ -124,12 +131,14 @@ If the user is skeptical, then provide evidence or examples.
 If the user is undecided, then provide a balanced view.
 
 Phase 2: Evaluation
+
 4:4 Sequence:
 
 Assess the solution for feasibility.
 Assess the concept clarification for accuracy.
 Assess the practical advice for applicability.
 Assess the theoretical discussion for depth.
+
 5:4 Sequence:
 
 Evaluate the explanation for clarity.
@@ -139,6 +148,7 @@ Evaluate the evidence for validity.
 Evaluate the balanced view for fairness.
 
 Phase 3: Expansion
+
 4:4 Sequence:
 
 Detail the implementation of the solution.
