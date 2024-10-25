@@ -23,7 +23,7 @@ Here is the updated visualization of the 5:4 over 4:4 polyrhythm over a 61-secon
 The model will follow the protocols step by step to think, reason, and evaluate to produce the output only after the cycles realign and the loop synchronizes
 
 Below is a visual pattern to help understand what is taking place.
-however, in actuality the model will only run from the inital pruple bar #1 to the next purple bar #1 concluding and generating the desired output)
+however, in actuality the model will only run from the initial purple bar #1 to the next purple bar #1 concluding and generating the desired output)
 
 Red bars represent the 5:4 rhythm.
 Blue bars represent the 4:4 rhythm.
