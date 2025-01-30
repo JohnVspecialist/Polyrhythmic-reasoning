@@ -1,23 +1,23 @@
 # Polyrhythmic-reasoning
 
 
-This Python script is designed to implement and demonstrate the "Polyrhythmic-reasoning Prompt pattern," a sophisticated technique for generating and evaluating responses to different types of problems or user states. The script runs two separate sequences of thought patterns (4:4 sequence and 5:4 sequence) over a loop of 20 steps and prints the results. Each sequence handles a different set of scenarios to generate detailed, context-aware responses.
+This Python script is designed to implement and demonstrate "Polyrhythmic-reasoning" a sophisticated technique for generating and evaluating responses to different types of problems or user states. The script runs two separate sequences of thought patterns (4:4 sequence and 5:4 sequence) over a loop of 20 steps and prints the results. Each sequence handles a different set of scenarios to generate detailed, context-aware responses.
 
 Purpose and Development Reason:
 This script was developed to:
 
-Implement the Polyrhythmic-reasoning Prompt Pattern: Demonstrate an advanced method for generating and evaluating AI responses.
+Implement the Polyrhythmic-reasoning: Demonstrate an advanced method for generating and evaluating AI responses.
 Enhance AI Responsiveness: Improve the ability of AI systems to handle various problem types and user states by generating detailed, context-aware, and effective responses.
 Feedback and Adaptation: Incorporate evaluation and expansion mechanisms to continuously improve the quality of responses based on feedback.
 Sophistication and Effectiveness: Elevate the sophistication and effectiveness of AI-generated outputs by a factor of 2, ensuring responses are smarter, more accurate, and contextually appropriate.
 Educational and Practical Application: Serve as an educational tool for understanding advanced prompt engineering techniques and their implementation in AI systems, as well as a practical tool for enhancing AI response quality in real-world applications.
 The script achieves these goals by running a structured loop through various scenarios, evaluating the outcomes, and expanding on them to provide deeper insights, thus ensuring high-quality and sophisticated AI responses.
 
-Polyrhythmic-reasoning prompt pattern:
+Polyrhythmic-reasoning:
 
 The goal is to make Gen AI model outputs qualitatively Smarter, better, with better reasoning, more efficient, save compute, and making it more user friendly as to avoid common pitfalls from unexperienced users.
 
-4:4 and 5:4 Polyrhythmic-reasoning prompt Pattern
+4:4 and 5:4 Polyrhythmic-reasoning
 
 Here is the updated visualization of the 5:4 over 4:4 polyrhythm over a 61-second timeline:
 The model will follow the protocols step by step to think, reason, and evaluate to produce the output only after the cycles realign and the loop synchronizes
@@ -254,7 +254,7 @@ Outline practical steps for financial planning.
 Discuss theoretical implications of economic models.
 
 Conclusion:
-The Polyrhythmic-reasoning prompt pattern provides a comprehensive and versatile approach to enhancing AI model outputs. By simply changing the step instructions, this method can be applied across various domains, ensuring detailed, clear, and effective responses. This approach systematically explores, evaluates, and expands upon each aspect of a problem or query, making it highly adaptable and beneficial for numerous applications.
+Polyrhythmic-reasoning provides a comprehensive and versatile approach to enhancing AI model outputs. By simply changing the step instructions, this method can be applied across various domains, ensuring detailed, clear, and effective responses. This approach systematically explores, evaluates, and expands upon each aspect of a problem or query, making it highly adaptable and beneficial for numerous applications.
 
 
 -John Vaina, Applied Gen AI Innovator
