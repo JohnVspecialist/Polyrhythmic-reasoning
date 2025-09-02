@@ -1,0 +1,114 @@
+from collections import deque, Counter
+
+# --- Step primitives (placeholders can be replaced with real functions) ---
+def technical_solution(ctx):      return "Suggested a technical solution", {"utility": 3}
+def conceptual_clarification(ctx):return "Clarified a concept", {"utility": 2}
+def practical_advice(ctx):        return "Offered practical advice", {"utility": 2}
+def theoretical_discussion(ctx):  return "Discussed theoretical aspects", {"utility": 1}
+
+def simple_explanation(ctx):      return "Provided a simple explanation", {"utility": 2}
+def detailed_information(ctx):    return "Provided detailed information", {"utility": 3}
+def summary(ctx):                 return "Provided a summary", {"utility": 2}
+def evidence_or_examples(ctx):    return "Provided evidence or examples", {"utility": 2}
+def balanced_view(ctx):           return "Provided a balanced view", {"utility": 2}
+
+# --- Polyrhythmic loops (4 and 5) ---
+loop_4 = [
+    ("Technical Solution", technical_solution),
+    ("Conceptual Clarification", conceptual_clarification),
+    ("Practical Advice", practical_advice),
+    ("Theoretical Discussion", theoretical_discussion),
+]
+
+loop_5 = [
+    ("Simple Explanation", simple_explanation),
+    ("Detailed Information", detailed_information),
+    ("Summary", summary),
+    ("Evidence or Examples", evidence_or_examples),
+    ("Balanced View", balanced_view),
+]
+
+# --- State & helpers ---
+history_window = 6                        # novelty window
+recent_types_4, recent_types_5 = deque(maxlen=history_window), deque(maxlen=history_window)
+last_outcome_4, last_outcome_5 = None, None
+
+def novelty_score(step_type, recent):
+    # Higher if this type hasn't appeared recently
+    return 2.0 if step_type not in recent else 0.5
+
+def detection_risk_penalty(text):
+    # Toy heuristic: longer/more complex → slightly higher risk
+    length_penalty = min(len(text) / 80.0, 2.0)
+    return round(0.5 + 0.5 * length_penalty, 2)
+
+def score_step(step_type, payload, text, recent):
+    nov = novelty_score(step_type, recent)
+    util = payload.get("utility", 1)
+    risk = detection_risk_penalty(text)
+    total = round((nov + util) - risk, 2)
+    return {"novelty": nov, "utility": util, "risk": risk, "total": total}
+
+def cross_bleed(incoming_text, prior_other_text):
+    if not prior_other_text:
+        return incoming_text
+    # Lightweight bleed: reference distilled keyword(s) from the other loop
+    key = prior_other_text.split(":")[0].split(".")[0].strip()
+    return f"{incoming_text} ↔ influenced by [{key}]"
+
+# --- Run 20 global steps (LCM of 4 and 5) ---
+results_4, results_5 = [], []
+
+for t in range(1, 21):
+    # Select step functions by each loop's cadence
+    type4, fn4 = loop_4[(t-1) % len(loop_4)]
+    type5, fn5 = loop_5[(t-1) % len(loop_5)]
+
+    # Context can carry shared/global info; expand as needed
+    ctx4 = {"t": t, "loop": "4"} 
+    ctx5 = {"t": t, "loop": "5"}
+
+    # Execute steps
+    out4, meta4 = fn4(ctx4)
+    out5, meta5 = fn5(ctx5)
+
+    # Cross-bleed (each influenced by the other's previous output)
+    out4b = cross_bleed(out4, last_outcome_5)
+    out5b = cross_bleed(out5, last_outcome_4)
+
+    # Score
+    s4 = score_step(type4, meta4, out4b, recent_types_4)
+    s5 = score_step(type5, meta5, out5b, recent_types_5)
+
+    # Update recency & last outcomes
+    recent_types_4.append(type4)
+    recent_types_5.append(type5)
+    last_outcome_4, last_outcome_5 = out4b, out5b
+
+    results_4.append((t, type4, out4b, s4))
+    results_5.append((t, type5, out5b, s5))
+
+# --- Resonance synthesis at the LCM boundary (step 20) ---
+def synthesize(topk=3):
+    # Pick top-k by total score across both loops
+    all_scored = []
+    for t, typ, txt, sc in results_4 + results_5:
+        all_scored.append((sc["total"], t, typ, txt, sc))
+    all_scored.sort(reverse=True, key=lambda x: (x[0], -x[1]))  # prefer higher score, then more recent
+    return all_scored[:topk]
+
+# --- Pretty-print (compact) ---
+print("Results after 20 steps:\n")
+
+print("4-loop (length=4) Results:")
+for t, typ, txt, sc in results_4:
+    print(f"Step {t}: {typ}\n  Outcome: {txt}\n  Score: {sc}\n")
+
+print("\n5-loop (length=5) Results:")
+for t, typ, txt, sc in results_5:
+    print(f"Step {t}: {typ}\n  Outcome: {txt}\n  Score: {sc}\n")
+
+top = synthesize(topk=5)
+print("\n=== Resonance Synthesis @ step 20 ===")
+for rank, (total, t, typ, txt, sc) in enumerate(top, 1):
+    print(f"{rank}. Score {total} @ step {t} | {typ} -> {txt}")
