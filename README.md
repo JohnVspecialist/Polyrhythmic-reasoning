@@ -1,5 +1,6 @@
 # Polyrhythmic-reasoning
 
+(Updated) a systematic cognitive framework that forces structured analysis rather than ad-hoc responses. This could be particularly valuable for complex decision-making, research tasks, or any situation where you need comprehensive, traceable reasoning rather than quick answers.
 
 This Python script is designed to implement and demonstrate "Polyrhythmic-reasoning" a sophisticated technique for generating and evaluating responses to different types of problems or user states. The script runs two separate sequences of thought patterns (4:4 sequence and 5:4 sequence) over a loop of 20 steps and prints the results. Each sequence handles a different set of scenarios to generate detailed, context-aware responses.
 
