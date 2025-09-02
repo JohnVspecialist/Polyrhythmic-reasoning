@@ -1,26 +1,162 @@
-from collections import deque, Counter
+import collections
+import math
+import random
 
-# --- Step primitives (placeholders can be replaced with real functions) ---
-def technical_solution(ctx):      return "Suggested a technical solution", {"utility": 3}
-def conceptual_clarification(ctx):return "Clarified a concept", {"utility": 2}
-def practical_advice(ctx):        return "Offered practical advice", {"utility": 2}
-def theoretical_discussion(ctx):  return "Discussed theoretical aspects", {"utility": 1}
+# --- Type Hinting for clarity and maintainability ---
+# Represents the context passed to step functions.
+# In a real system, this would be a much richer object.
+Context = dict
 
-def simple_explanation(ctx):      return "Provided a simple explanation", {"utility": 2}
-def detailed_information(ctx):    return "Provided detailed information", {"utility": 3}
-def summary(ctx):                 return "Provided a summary", {"utility": 2}
-def evidence_or_examples(ctx):    return "Provided evidence or examples", {"utility": 2}
-def balanced_view(ctx):           return "Provided a balanced view", {"utility": 2}
+# Represents the metadata returned by a step function.
+StepMetadata = dict
+
+# Represents the result of a step: (outcome_text, metadata)
+StepResult = tuple[str, StepMetadata]
+
+# Represents a step definition: (type_name, function)
+StepDefinition = tuple[str, collections.Callable[[Context], StepResult]]
+
+# --- Core Logic & Scoring Parameters ---
+# These would be tuned based on extensive experimentation in a real application.
+NOVELTY_SCORE_NEW = 2.5    # Higher bonus for completely new types
+NOVELTY_SCORE_RECENT = 0.8 # Reduced bonus if type seen in history window
+NOVELTY_HISTORY_WINDOW = 8 # Larger window to encourage more diverse output
+
+# Weights for the total score calculation
+WEIGHT_NOVELTY = 1.2
+WEIGHT_UTILITY = 1.5
+WEIGHT_RISK = 1.0
+
+# Parameters for simulated detection risk
+MIN_RISK_PENALTY = 0.3
+MAX_RISK_PENALTY = 2.5
+RISK_LENGTH_FACTOR = 0.02 # How much length contributes to risk (per char)
+RISK_COMPLEXITY_FACTOR = 0.05 # How much "simulated complexity" contributes to risk
+
+# --- Step primitives (simulating intelligent, context-aware generation) ---
+# Each function now uses 'ctx' more deeply to vary its output.
+# The 'utility' is a subjective measure for this simulation.
+# In a real system, these would call LLMs or complex generative logic.
+
+def _generate_varied_output(base_text: str, ctx: Context, variations: list[str]) -> str:
+    """Helper to generate context-aware, varied text."""
+    seed_val = (ctx.get("t", 0) * 100 + int(ctx.get("loop", "0")))
+    random.seed(seed_val)
+    chosen_variation = random.choice(variations)
+    
+    # Introduce dynamic elements based on context
+    dynamic_parts = []
+    if ctx.get("t") % 3 == 0:
+        dynamic_parts.append(f"incorporating recent trends from Q{math.ceil(ctx['t']/5)}")
+    if "input_query" in ctx:
+        dynamic_parts.append(f"addressing '{ctx['input_query'][:15]}...'")
+    if dynamic_parts:
+        return f"{base_text} {chosen_variation} ({', '.join(dynamic_parts)})."
+    return f"{base_text} {chosen_variation}."
+
+def technical_solution(ctx: Context) -> StepResult:
+    variations = [
+        "Focusing on microservices architecture",
+        "Utilizing serverless components for scalability",
+        "Implementing a robust CI/CD pipeline",
+        "Designing a resilient data storage layer",
+    ]
+    text = _generate_varied_output("Proposed an optimized technical solution", ctx, variations)
+    # Simulate higher utility for 'technical' solutions in a specific context
+    utility = 3 + (0.5 if "critical_issue" in ctx.get("input_query", "") else 0)
+    return text, {"utility": utility, "complexity": 0.7} # Simulated complexity
+
+def conceptual_clarification(ctx: Context) -> StepResult:
+    variations = [
+        "Demystifying complex theoretical frameworks",
+        "Explaining core principles with practical analogies",
+        "Distinguishing between related but distinct concepts",
+        "Providing a high-level overview of system interactions",
+    ]
+    text = _generate_varied_output("Provided clear conceptual insight", ctx, variations)
+    return text, {"utility": 2, "complexity": 0.5}
+
+def practical_advice(ctx: Context) -> StepResult:
+    variations = [
+        "Suggesting actionable steps for immediate implementation",
+        "Offering best practices based on industry standards",
+        "Recommending tools and methodologies for efficiency",
+        "Guiding through a common problem-solving workflow",
+    ]
+    text = _generate_varied_output("Offered pragmatic advice", ctx, variations)
+    utility = 2 + (0.7 if "how_to" in ctx.get("input_query", "") else 0)
+    return text, {"utility": utility, "complexity": 0.4}
+
+def theoretical_discussion(ctx: Context) -> StepResult:
+    variations = [
+        "Exploring the philosophical underpinnings of the approach",
+        "Discussing potential long-term implications and challenges",
+        "Analyzing different academic perspectives on the topic",
+        "Pondering the ethical considerations of implementation",
+    ]
+    text = _generate_varied_output("Engaged in deep theoretical discussion", ctx, variations)
+    return text, {"utility": 1, "complexity": 0.8}
+
+def simple_explanation(ctx: Context) -> StepResult:
+    variations = [
+        "Breaking down a topic into easily digestible parts",
+        "Using everyday examples for quick understanding",
+        "Summarizing the essence without jargon",
+        "Providing a beginner-friendly introduction",
+    ]
+    text = _generate_varied_output("Gave a straightforward explanation", ctx, variations)
+    return text, {"utility": 2, "complexity": 0.3}
+
+def detailed_information(ctx: Context) -> StepResult:
+    variations = [
+        "Presenting comprehensive data and specifications",
+        "Elaborating on specific sub-components and their functions",
+        "Including detailed diagrams and flowcharts (conceptually)",
+        "Providing an exhaustive list of features and limitations",
+    ]
+    text = _generate_varied_output("Delivered detailed informational content", ctx, variations)
+    utility = 3 + (0.8 if "deep_dive" in ctx.get("input_query", "") else 0)
+    return text, {"utility": utility, "complexity": 0.6}
+
+def summary(ctx: Context) -> StepResult:
+    variations = [
+        "Recapitulating the main arguments concisely",
+        "Providing bullet points of key takeaways",
+        "Synthesizing conclusions from diverse sources",
+        "Offering an executive overview of the discussion",
+    ]
+    text = _generate_varied_output("Offered a succinct summary", ctx, variations)
+    return text, {"utility": 2, "complexity": 0.3}
+
+def evidence_or_examples(ctx: Context) -> StepResult:
+    variations = [
+        "Citing empirical studies and research findings",
+        "Illustrating concepts with real-world case studies",
+        "Presenting testimonials or user feedback",
+        "Providing code snippets or architectural diagrams (conceptually)",
+    ]
+    text = _generate_varied_output("Supported claims with strong evidence", ctx, variations)
+    return text, {"utility": 2, "complexity": 0.5}
+
+def balanced_view(ctx: Context) -> StepResult:
+    variations = [
+        "Presenting a fair and unbiased perspective",
+        "Acknowledging both advantages and disadvantages",
+        "Discussing different schools of thought on the subject",
+        "Offering counter-arguments and rebuttals where appropriate",
+    ]
+    text = _generate_varied_output("Articulated a balanced viewpoint", ctx, variations)
+    return text, {"utility": 2, "complexity": 0.4}
 
 # --- Polyrhythmic loops (4 and 5) ---
-loop_4 = [
+loop_4: list[StepDefinition] = [
     ("Technical Solution", technical_solution),
     ("Conceptual Clarification", conceptual_clarification),
     ("Practical Advice", practical_advice),
     ("Theoretical Discussion", theoretical_discussion),
 ]
 
-loop_5 = [
+loop_5: list[StepDefinition] = [
     ("Simple Explanation", simple_explanation),
     ("Detailed Information", detailed_information),
     ("Summary", summary),
@@ -29,86 +165,225 @@ loop_5 = [
 ]
 
 # --- State & helpers ---
-history_window = 6                        # novelty window
-recent_types_4, recent_types_5 = deque(maxlen=history_window), deque(maxlen=history_window)
-last_outcome_4, last_outcome_5 = None, None
+# Deques are efficient for fixed-size history windows.
+recent_types_4: collections.deque[str] = collections.deque(maxlen=NOVELTY_HISTORY_WINDOW)
+recent_types_5: collections.deque[str] = collections.deque(maxlen=NOVELTY_HISTORY_WINDOW)
+last_outcome_4: str | None = None
+last_outcome_5: str | None = None
 
-def novelty_score(step_type, recent):
-    # Higher if this type hasn't appeared recently
-    return 2.0 if step_type not in recent else 0.5
+def calculate_novelty_score(step_type: str, recent_history: collections.deque[str]) -> float:
+    """Calculates a dynamic novelty score based on recent history."""
+    if step_type not in recent_history:
+        return NOVELTY_SCORE_NEW
+    # Penalize more if it appeared very recently
+    try:
+        # Distance from the right (most recent)
+        index_from_end = len(recent_history) - recent_history.index(step_type) -1
+        # Scale penalty based on how recently it appeared. Closer to 0 is more recent.
+        # e.g., if index_from_end is 0 (most recent), penalty is high.
+        # if index_from_end is NOVELTY_HISTORY_WINDOW-1 (oldest in window), penalty is lower.
+        recency_penalty_factor = (NOVELTY_HISTORY_WINDOW - index_from_end) / NOVELTY_HISTORY_WINDOW
+        return max(NOVELTY_SCORE_RECENT * (1 - recency_penalty_factor * 0.7), 0.1) # Ensure min score
+    except ValueError: # Should not happen if step_type is in recent_history
+        return NOVELTY_SCORE_RECENT # Fallback
 
-def detection_risk_penalty(text):
-    # Toy heuristic: longer/more complex → slightly higher risk
-    length_penalty = min(len(text) / 80.0, 2.0)
-    return round(0.5 + 0.5 * length_penalty, 2)
+def calculate_detection_risk_penalty(text: str, complexity: float) -> float:
+    """
+    Calculates a simulated detection risk penalty.
+    In a real system, this would involve sentiment analysis, bias detection,
+    content moderation APIs, or other sophisticated checks.
+    """
+    if not isinstance(text, str) or not text:
+        return MAX_RISK_PENALTY # Penalize empty/invalid text heavily
 
-def score_step(step_type, payload, text, recent):
-    nov = novelty_score(step_type, recent)
-    util = payload.get("utility", 1)
-    risk = detection_risk_penalty(text)
-    total = round((nov + util) - risk, 2)
-    return {"novelty": nov, "utility": util, "risk": risk, "total": total}
+    # Base risk for any generated content
+    risk = MIN_RISK_PENALTY
+    
+    # Length increases risk (e.g., more surface area for issues)
+    risk += len(text) * RISK_LENGTH_FACTOR
+    
+    # Simulated complexity also adds to risk (more complex text, more potential for misinterpretation)
+    risk += complexity * RISK_COMPLEXITY_FACTOR * 10 # Scale complexity to have more impact
 
-def cross_bleed(incoming_text, prior_other_text):
+    return round(min(risk, MAX_RISK_PENALTY), 2) # Cap max risk
+
+def score_step(step_type: str, payload: StepMetadata, text: str, recent_history: collections.deque[str]) -> dict[str, float]:
+    """Calculates the overall score for a step's output."""
+    novelty = calculate_novelty_score(step_type, recent_history)
+    utility = payload.get("utility", 1.0) # Default utility if not provided
+    complexity = payload.get("complexity", 0.5) # Default complexity for risk calculation
+    risk = calculate_detection_risk_penalty(text, complexity)
+    
+    total_score = round(
+        (WEIGHT_NOVELTY * novelty + WEIGHT_UTILITY * utility) - (WEIGHT_RISK * risk),
+        2
+    )
+    return {"novelty": novelty, "utility": utility, "risk": risk, "total": total_score, "complexity": complexity}
+
+def extract_key_phrase(text: str) -> str:
+    """
+    Extracts a more meaningful key phrase from the text for cross-bleeding.
+    This is a heuristic; real-world would use NLP keyphrase extraction.
+    """
+    if not text:
+        return ""
+    
+    # Remove any existing influence markers to get original text
+    text_cleaned = text.split(" ↔ ")[0].split(" ↔ ")[0].strip()
+    
+    # Try to extract a phrase based on common sentence structures
+    # (e.g., "Proposed an optimized technical solution. Focusing on...")
+    if "." in text_cleaned:
+        key_phrase = text_cleaned.split(".")[0].strip()
+    elif " " in text_cleaned and len(text_cleaned.split(" ")) > 3:
+        # Take the first few words if it looks like a phrase
+        key_phrase = " ".join(text_cleaned.split(" ")[:5])
+    else:
+        key_phrase = text_cleaned # Fallback
+
+    if len(key_phrase) > 50: # Truncate long phrases
+        key_phrase = key_phrase[:47] + "..."
+    
+    return key_phrase
+
+def cross_bleed(incoming_text: str, prior_other_text: str | None) -> str:
+    """
+    Integrates influence from the other loop's previous output.
+    This is conceptually advanced; in a real system, the generative functions
+    themselves would use this 'bled' information to modify their output.
+    """
     if not prior_other_text:
         return incoming_text
-    # Lightweight bleed: reference distilled keyword(s) from the other loop
-    key = prior_other_text.split(":")[0].split(".")[0].strip()
+    
+    key = extract_key_phrase(prior_other_text)
+    if not key:
+        return incoming_text # No meaningful key to bleed
+    
+    # Add a marker for influence, ensuring it doesn't double-tag
+    if "↔" in incoming_text:
+        # If already influenced, try to update or add a new layer
+        base_part = incoming_text.split(" ↔ ")[0]
+        existing_influences = [s.strip("[]") for s in incoming_text.split(" ↔ ")[1:]]
+        if key not in existing_influences:
+            existing_influences.append(key)
+        return f"{base_part} ↔ informed by [{', '.join(existing_influences)}]"
+    
     return f"{incoming_text} ↔ influenced by [{key}]"
 
-# --- Run 20 global steps (LCM of 4 and 5) ---
-results_4, results_5 = [], []
+# --- Main Simulation Loop ---
+def run_simulation(total_steps: int = 20, initial_query: str = "Explain the new AI model") -> tuple[list, list]:
+    """
+    Executes the polyrhythmic loop simulation.
+    
+    Args:
+        total_steps: The number of global simulation steps to run.
+        initial_query: A simulated initial user query to add context.
 
-for t in range(1, 21):
-    # Select step functions by each loop's cadence
-    type4, fn4 = loop_4[(t-1) % len(loop_4)]
-    type5, fn5 = loop_5[(t-1) % len(loop_5)]
+    Returns:
+        A tuple containing two lists: results for loop_4 and results for loop_5.
+    """
+    results_4: list[tuple[int, str, str, dict]] = []
+    results_5: list[tuple[int, str, str, dict]] = []
 
-    # Context can carry shared/global info; expand as needed
-    ctx4 = {"t": t, "loop": "4"} 
-    ctx5 = {"t": t, "loop": "5"}
+    global last_outcome_4, last_outcome_5 # Modify global state
+    last_outcome_4, last_outcome_5 = None, None # Reset for fresh run
+    recent_types_4.clear(); recent_types_5.clear() # Clear deques
 
-    # Execute steps
-    out4, meta4 = fn4(ctx4)
-    out5, meta5 = fn5(ctx5)
+    for t in range(1, total_steps + 1):
+        # Select step functions by each loop's cadence
+        type4, fn4 = loop_4[(t - 1) % len(loop_4)]
+        type5, fn5 = loop_5[(t - 1) % len(loop_5)]
 
-    # Cross-bleed (each influenced by the other's previous output)
-    out4b = cross_bleed(out4, last_outcome_5)
-    out5b = cross_bleed(out5, last_outcome_4)
+        # Context carries shared/global info; enriched with initial query
+        current_context = {"t": t, "input_query": initial_query}
+        ctx4 = {**current_context, "loop": "4"} # Merge with loop-specific context
+        ctx5 = {**current_context, "loop": "5"}
 
-    # Score
-    s4 = score_step(type4, meta4, out4b, recent_types_4)
-    s5 = score_step(type5, meta5, out5b, recent_types_5)
+        # Execute steps
+        out4, meta4 = fn4(ctx4)
+        out5, meta5 = fn5(ctx5)
 
-    # Update recency & last outcomes
-    recent_types_4.append(type4)
-    recent_types_5.append(type5)
-    last_outcome_4, last_outcome_5 = out4b, out5b
+        # Cross-bleed (each influenced by the other's previous output)
+        # Error handling for cross_bleed if prior_other_text is unexpectedly malformed
+        try:
+            out4b = cross_bleed(out4, last_outcome_5)
+        except Exception as e:
+            out4b = f"{out4} ↔ ERROR: Cross-bleed failed ({e})"
+            print(f"Warning: Cross-bleed for loop 4 failed at step {t}: {e}")
+        
+        try:
+            out5b = cross_bleed(out5, last_outcome_4)
+        except Exception as e:
+            out5b = f"{out5} ↔ ERROR: Cross-bleed failed ({e})"
+            print(f"Warning: Cross-bleed for loop 5 failed at step {t}: {e}")
 
-    results_4.append((t, type4, out4b, s4))
-    results_5.append((t, type5, out5b, s5))
+        # Score
+        s4 = score_step(type4, meta4, out4b, recent_types_4)
+        s5 = score_step(type5, meta5, out5b, recent_types_5)
 
-# --- Resonance synthesis at the LCM boundary (step 20) ---
-def synthesize(topk=3):
-    # Pick top-k by total score across both loops
+        # Update recency & last outcomes for the *next* iteration
+        recent_types_4.append(type4)
+        recent_types_5.append(type5)
+        last_outcome_4, last_outcome_5 = out4b, out5b
+
+        results_4.append((t, type4, out4b, s4))
+        results_5.append((t, type5, out5b, s5))
+    
+    return results_4, results_5
+
+# --- Resonance synthesis at the LCM boundary (or any desired point) ---
+def synthesize_top_results(results_4: list, results_5: list, topk: int = 5) -> list[tuple]:
+    """
+    Synthesizes the top-k results based on their total score.
+    
+    Args:
+        results_4: List of results from loop 4.
+        results_5: List of results from loop 5.
+        topk: The number of top results to return.
+
+    Returns:
+        A sorted list of the top results.
+    """
     all_scored = []
     for t, typ, txt, sc in results_4 + results_5:
         all_scored.append((sc["total"], t, typ, txt, sc))
-    all_scored.sort(reverse=True, key=lambda x: (x[0], -x[1]))  # prefer higher score, then more recent
+    
+    # Sort: prefer higher total score, then more recent (higher 't') as a tie-breaker
+    all_scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    
     return all_scored[:topk]
 
-# --- Pretty-print (compact) ---
-print("Results after 20 steps:\n")
+# --- Pretty-print Results ---
+def print_simulation_results(results_4: list, results_5: list, top_synthesis_k: int = 5) -> None:
+    """Prints the formatted simulation results."""
+    print("--- Polyrhythmic Loop Simulation Results ---")
+    print(f"Running with NOVELTY_HISTORY_WINDOW = {NOVELTY_HISTORY_WINDOW}\n")
 
-print("4-loop (length=4) Results:")
-for t, typ, txt, sc in results_4:
-    print(f"Step {t}: {typ}\n  Outcome: {txt}\n  Score: {sc}\n")
+    print("--- Loop 4 Results (Cadence=4) ---")
+    for t, typ, txt, sc in results_4:
+        print(f"Step {t:02d}: {typ:<25}")
+        print(f"  Outcome: {txt}")
+        print(f"  Score: Total={sc['total']:.2f}, Nov={sc['novelty']:.2f}, Util={sc['utility']:.2f}, Risk={sc['risk']:.2f}, Compl={sc['complexity']:.2f}\n")
 
-print("\n5-loop (length=5) Results:")
-for t, typ, txt, sc in results_5:
-    print(f"Step {t}: {typ}\n  Outcome: {txt}\n  Score: {sc}\n")
+    print("\n--- Loop 5 Results (Cadence=5) ---")
+    for t, typ, txt, sc in results_5:
+        print(f"Step {t:02d}: {typ:<25}")
+        print(f"  Outcome: {txt}")
+        print(f"  Score: Total={sc['total']:.2f}, Nov={sc['novelty']:.2f}, Util={sc['utility']:.2f}, Risk={sc['risk']:.2f}, Compl={sc['complexity']:.2f}\n")
 
-top = synthesize(topk=5)
-print("\n=== Resonance Synthesis @ step 20 ===")
-for rank, (total, t, typ, txt, sc) in enumerate(top, 1):
-    print(f"{rank}. Score {total} @ step {t} | {typ} -> {txt}")
+    top_results = synthesize_top_results(results_4, results_5, topk=top_synthesis_k)
+    print(f"\n=== Resonance Synthesis (Top {top_synthesis_k} Results) ===")
+    for rank, (total_score, t, typ, txt, sc) in enumerate(top_results, 1):
+        print(f"{rank:02d}. Score {total_score:.2f} @ Step {t:02d} | {typ} -> {txt}")
+
+# --- Execute the Simulation ---
+if __name__ == "__main__":
+    # Example initial query that influences step utility and generation
+    user_query = "I need a deep-dive on new AI models, particularly dealing with critical_issue of scalability. How_to deploy effectively?"
+    
+    loop4_results, loop5_results = run_simulation(total_steps=20, initial_query=user_query)
+    print_simulation_results(loop4_results, loop5_results, top_synthesis_k=7)
+    
+    # You can visualize these complex interactions.
+    # Here's an abstract visualization of the polyrhythmic system with enhanced components:
+    
