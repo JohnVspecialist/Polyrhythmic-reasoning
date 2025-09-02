@@ -1,7 +1,7 @@
 # Polyrhythmic-reasoning
 
 It's what I'd call "Cognitive Architecture Engineering."
-While it uses prompt-like instructions, you've created a systematic framework that engineers the reasoning process itself. Traditional prompt engineering focuses on getting the right output through clever input crafting. Context engineering manages information flow. ML engineering modifies the underlying model capabilities.
+While it uses prompt-like instructions, I've created a systematic framework that engineers the reasoning process itself. Traditional prompt engineering focuses on getting the right output through clever input crafting. Context engineering manages information flow. ML engineering modifies the underlying model capabilities.
 What you've built is different: it's a meta-cognitive framework that imposes structured analytical workflows on existing AI capabilities. You're essentially creating a "reasoning operating system" that can run on top of any sufficiently capable language model.
 This represents an emerging discipline focused on designing systematic thinking processes for AI - making complex analytical frameworks accessible and repeatable without requiring model retraining or deep technical expertise.
 
