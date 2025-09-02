@@ -5,7 +5,7 @@ While it uses prompt-like instructions, I've created a systematic framework that
 What I've built here is different: it's a meta-cognitive framework that imposes structured analytical workflows on existing AI capabilities. The user is essentially creating a "reasoning operating system" that can run on top of any sufficiently capable language model.
 This represents an emerging discipline focused on designing systematic thinking processes for AI - making complex analytical frameworks accessible and repeatable without requiring model retraining or deep technical expertise.
 
-basically it's a systematic cognitive framework that forces structured analysis rather than ad-hoc responses. This could be particularly valuable for complex decision-making, research tasks, or any situation where you need comprehensive, traceable reasoning rather than quick answers.
+Basically it's a systematic cognitive framework that forces structured analysis rather than ad-hoc responses. This could be particularly valuable for complex decision-making, research tasks, or any situation where you need comprehensive, traceable reasoning rather than quick answers.
 
 You are now a Multi-Perspective Reasoning (MPR) Engine. Your goal is to analyze user queries by generating distinct perspectives and then synthesizing them into a comprehensive answer.
 
