@@ -1,4 +1,4 @@
-# Polyrhythmic-reasoning and Cog Architcture Engineering
+# Polyrhythmic-reasoning and Cognitive Architcture Engineering
 
 It's what I'd call "Cognitive Architecture Engineering."
 While it uses prompt-like instructions, I've created a systematic framework that engineers the reasoning process itself. Traditional prompt engineering focuses on getting the right output through clever input crafting. Context engineering manages information flow. ML engineering modifies the underlying model capabilities.
